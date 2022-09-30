@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.38.2 -->
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkAdjustment" id="auto_scan_int_adj">
+    <property name="lower">1</property>
+    <property name="upper">3600</property>
+    <property name="value">120</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkDialog" id="close_dialog">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Fan control running</property>
+    <property name="resizable">False</property>
+    <property name="window-position">center-on-parent</property>
+    <property name="icon-name">dialog-question</property>
+    <property name="type-hint">dialog</property>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="close_box">
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="homogeneous">True</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
+            <child>
+              <object class="GtkButton" id="close_auto_no_btn">
+                <property name="label" translatable="yes">No</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="close_auto_yes_btn">
+                <property name="label" translatable="yes">Yes</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="close_auto_prompt_lbl">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Fan speed control is currently running!
+
+Do you wish to set fan speed back to auto when exiting?</property>
+            <property name="justify">center</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="close_current_speed_lbl">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkAdjustment" id="crit_temp_adj">
+    <property name="lower">30</property>
+    <property name="upper">100</property>
+    <property name="value">55</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkListStore" id="fan_speed_lst">
+    <columns>
+      <!-- column-name speed_name -->
+      <column type="gchararray"/>
+      <!-- column-name speed_idx -->
+      <column type="gint"/>
+      <!-- column-name speed_id -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">Auto</col>
+        <col id="1">0</col>
+        <col id="2" translatable="yes">0</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">1</col>
+        <col id="1">1</col>
+        <col id="2" translatable="yes">1</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">2</col>
+        <col id="1">2</col>
+        <col id="2" translatable="yes">2</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">3</col>
+        <col id="1">3</col>
+        <col id="2" translatable="yes">3</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">4</col>
+        <col id="1">4</col>
+        <col id="2" translatable="yes">4</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">5</col>
+        <col id="1">5</col>
+        <col id="2" translatable="yes">5</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">6</col>
+        <col id="1">6</col>
+        <col id="2" translatable="yes">6</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">7</col>
+        <col id="1">7</col>
+        <col id="2" translatable="yes">7</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Full-Speed</col>
+        <col id="1">8</col>
+        <col id="2" translatable="yes">8</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkAdjustment" id="man_scan_int_adj">
+    <property name="lower">1</property>
+    <property name="upper">3600</property>
+    <property name="value">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="safe_temp_adj">
+    <property name="lower">30</property>
+    <property name="upper">99</property>
+    <property name="value">50</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkWindow" id="window">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Fan Control</property>
+    <property name="resizable">False</property>
+    <property name="window-position">center</property>
+    <property name="icon">../data/icon.png</property>
+    <child>
+      <object class="GtkBox" id="main_box">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkNotebook" id="main_notebook">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <child>
+              <!-- n-columns=3 n-rows=5 -->
+              <object class="GtkGrid" id="auto_ctrl_grid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">20</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkLabel" id="auto_ctrl_lbl">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="ypad">20</property>
+                    <property name="label" translatable="yes">Current Options: 120s - 55C - 50C - Full-Speed</property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="auto_ctrl_apply_btn">
+                    <property name="label" translatable="yes">Apply</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <!-- n-columns=2 n-rows=4 -->
+                  <object class="GtkGrid" id="auto_ctrl_grd">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkLabel" id="scan_interval_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Scan Interval:</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="crit_tmp_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Critical Temperature:</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="safe_temp_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Safe temperature: </property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="fan_speed_crit_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Fan speed at Critical temperature:</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="auto_scan_int_sbtn">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="text" translatable="yes">55</property>
+                        <property name="input-purpose">number</property>
+                        <property name="adjustment">auto_scan_int_adj</property>
+                        <property name="climb-rate">1</property>
+                        <property name="numeric">True</property>
+                        <property name="value">120</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="crit_tmp_sbtn">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="text" translatable="yes">55</property>
+                        <property name="adjustment">crit_temp_adj</property>
+                        <property name="climb-rate">1</property>
+                        <property name="value">55</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="safe_tmp_sbtn">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="text" translatable="yes">50</property>
+                        <property name="adjustment">safe_temp_adj</property>
+                        <property name="climb-rate">1</property>
+                        <property name="value">50</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="fan_speed_crit_cmb">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="model">fan_speed_lst</property>
+                        <property name="id-column">2</property>
+                        <property name="active-id">8</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="auto_fan_speed_cell_renderer"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">3</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="auto_config_nb">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Automatic Control</property>
+              </object>
+              <packing>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=6 -->
+              <object class="GtkGrid" id="man_ctrl_grid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">30</property>
+                <property name="column-spacing">20</property>
+                <property name="column-homogeneous">True</property>
+                <child>
+                  <object class="GtkButton" id="man_apply_btn">
+                    <property name="label" translatable="yes">Apply</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <!-- n-columns=2 n-rows=2 -->
+                  <object class="GtkGrid" id="man_ctrl_settings_grid">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="row-homogeneous">True</property>
+                    <property name="column-homogeneous">True</property>
+                    <child>
+                      <object class="GtkLabel" id="man_scan_interval_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Scan Interval:</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="man_fan_speed_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Fan Speed:</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="man_scan_int_sbtn">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="text" translatable="yes">10</property>
+                        <property name="input-purpose">number</property>
+                        <property name="adjustment">man_scan_int_adj</property>
+                        <property name="climb-rate">1</property>
+                        <property name="numeric">True</property>
+                        <property name="value">10</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkComboBox" id="man_fan_speed_cmb">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="model">fan_speed_lst</property>
+                        <property name="id-column">2</property>
+                        <property name="active-id">7</property>
+                        <child>
+                          <object class="GtkCellRendererText" id="man_fan_speed_renderer"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="man_ctrl_lbl">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="xpad">20</property>
+                    <property name="ypad">20</property>
+                    <property name="label" translatable="yes">Override scan interval and force a given fan speed</property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="man_control_nb">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">Manual Control</property>
+              </object>
+              <packing>
+                <property name="position">1</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox" id="about_grid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel" id="about_top_lbl">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Name of application.
+2022.</property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="about_img">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="pixbuf">../data/logo.png</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="about_author_lbl">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Created By ME
+Credit original</property>
+                    <property name="justify">center</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="about_nb">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">About</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+                <property name="tab-fill">False</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="current_settings_lbl">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="label" translatable="yes">Current settings and info
+here</property>
+            <property name="justify">center</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="buttons_box">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkButton" id="minimize_btn">
+                <property name="label" translatable="yes">Minimize</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkButton" id="exit_btn">
+                <property name="label" translatable="yes">Exit</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="status_bar">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="margin-left">10</property>
+            <property name="margin-right">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">2</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
