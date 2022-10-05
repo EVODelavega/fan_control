@@ -102,6 +102,29 @@ typedef struct _application {
 int update_temps(gpointer data);
 void change_fan_speed(int new_speed, application *app);
 
+// function to execute when we absolutely, for sure, unequivocally are shutting down
+void exit_app(application *app) {
+    if (app->running) {
+        g_source_remove(app->timeout);
+    }
+    printf("Exit\n");
+    gtk_main_quit();
+}
+
+int get_cpu_temp(application *app) {
+    int temp = 0;
+    FILE *temp_input;
+    // get current CPU temp
+    temp_input = fopen("/proc/acpi/ibm/thermal","r");
+    if(temp_input == NULL){
+        gtk_label_set_text(app->current_lbl, "YOU ARE NOT RUNNING KERNEL WITH THINKPAD PATCH!");
+        return -1;
+    }
+    fscanf(temp_input, "temperatures:	%d", &temp);
+    fclose(temp_input);
+    return temp;
+}
+
 int set_auto_values(application *data) {
     char tmp_string[250];
     int temp_crit, temp_safe;
@@ -145,22 +168,19 @@ void window_destroy(GtkWidget *object, gpointer data) {
     application *app = data;
     // remove timeout if running
     if (app->running) {
-        g_source_remove(app->timeout);
         if (app->fan_speed == 0) {
             // fan speed is already in auto, we don't need to prompt to set it to auto, just silently exit
             printf("Fan already in auto, timout removed, exit\n");
-            gtk_main_quit();
+            exit_app(app);
             return;
         }
         // show close dialog
         sprintf(tmp_str, "Current fan speed: %s (%d)", fan_speeds[app->fan_speed], app->fan_speed);
         gtk_label_set_text(app->close_lbl, tmp_str);
         gtk_widget_show(app->close);
-        printf("Prompting for final fan control\n");
         return;
     }
-    printf("Exit\n");
-    gtk_main_quit();
+    exit_app(app);
 }
 
 // minimize -> have taskbar icon
@@ -261,16 +281,12 @@ int update_temps(gpointer data) {
     char tmp_string[250] = {'\0'};
     char time_str[10] = {'\0'};
     char message[100] = {'\0'};
-    FILE *temp_input, *sys_in;
-    int temp;
+    FILE *sys_in;
     // get current CPU temp
-    temp_input = fopen("/proc/acpi/ibm/thermal","r");
-    if(temp_input == NULL){
-        gtk_label_set_text(app->current_lbl,"YOU ARE NOT RUNNING KERNEL WITH THINKPAD PATCH!");
+    int temp = get_cpu_temp(app);
+    if (temp == -1) {
         return FALSE;
     }
-    fscanf(temp_input, "temperatures:	%d", &temp);
-    fclose(temp_input);
     // get current timestamp
     sys_in = popen("date '+%H:%M:%S'","r");
     fgets(time_str, 9, sys_in);
@@ -329,38 +345,44 @@ void notebook_switch(GtkNotebook *nb, GtkWidget *page, guint page_num, gpointer 
         // we're running - so we don't have to update the label
         return;
     }
+    char current_txt[80];
+    const char *lbl_fmt = "%s\nCPU temp: %d"; // max should be below 80
+    int temp = get_cpu_temp(app);
+    if (temp == -1) {
+        // error, the label has been set with the error message, we're done
+        return;
+    }
     switch (page_num) {
         case 0:
-            gtk_label_set_text(app->current_lbl, "Hit apply to run automatic control with specified settings");
+            sprintf(current_txt, lbl_fmt, "Hit apply to run automatic control with specified settings", temp); // ~60 chars + 2-3 digits for temp
             break;
         case 1:
-            gtk_label_set_text(app->current_lbl, "Hit apply to force the selected fan speed");
+            sprintf(current_txt, lbl_fmt, "Hit apply to force the selected fan speed", temp);
             break;
         default:
-            gtk_label_set_text(app->current_lbl, "ABOUT");
+            sprintf(current_txt, lbl_fmt, "", temp);
     }
+    gtk_label_set_text(app->current_lbl, current_txt);
 }
 
 void dialog_yes(GtkButton *close_y, gpointer data) {
     application *app = data;
     gtk_widget_hide(app->close);
     change_fan_speed(FAN_LVL_AUTO, app);
-    gtk_main_quit();
+    exit_app(app);
 }
 
 void dialog_no(GtkButton *close_n, gpointer data) {
     application *app = data;
     gtk_widget_hide(app->close);
-    gtk_main_quit();
+    exit_app(app);
 }
 
 void dialog_close(GtkButton *close_c, gpointer data) {
     application *app = data;
     gtk_widget_hide(app->close);
-    if (app->running == 0) {
-        app->timeout = g_timeout_add_seconds(app->scan_interval, update_temps, data);
-        app->running = 1;
-    }
+    // no call to exit_app, timeout (if any) remains active
+    // just hide the close dialog widget, and carry on
 }
 
 int main(int argc, char** argv) {
@@ -465,6 +487,8 @@ int main(int argc, char** argv) {
     if (!set_auto_values(&app)) {
         fprintf(stderr, "DEFAULT PROFILE VALUES ARE WRONG");
     }
+    // populate label with current fan control
+    notebook_switch(main_nb, NULL, 0, &app); // the page is irrelevant, we can safely pass in NULL
     // show window
     gtk_widget_show(window);
 

@@ -185,6 +185,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
     <property name="title" translatable="yes">Fan Control</property>
     <property name="resizable">False</property>
     <property name="window-position">center</property>
+    <property name="destroy-with-parent">True</property>
     <property name="icon">../data/icon.png</property>
     <property name="gravity">center</property>
     <child>
@@ -595,7 +596,7 @@ Elias Van Ootegem</property>
                   <object class="GtkLabel" id="about_author_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Created By EVODelavega
+                    <property name="label" translatable="yes">Created By Elias Van Ootegem
 A GTK+-3 remake of the GTK+-2 Thinkpad-Fan-Control.
 Credit and special thanks to:
 Original by &lt;a href=" https://github.com/Stanko/ThinkPad-Fan-Control"&gt;Stanko&lt;/a&gt;
