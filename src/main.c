@@ -146,8 +146,14 @@ void window_destroy(GtkWidget *object, gpointer data) {
     // remove timeout if running
     if (app->running) {
         g_source_remove(app->timeout);
+        if (app->fan_speed == 0) {
+            // fan speed is already in auto, we don't need to prompt to set it to auto, just silently exit
+            printf("Fan already in auto, timout removed, exit\n");
+            gtk_main_quit();
+            return;
+        }
         // show close dialog
-        sprintf(tmp_str, "Current fan speed: %s", fan_speeds[app->fan_speed]);
+        sprintf(tmp_str, "Current fan speed: %s (%d)", fan_speeds[app->fan_speed], app->fan_speed);
         gtk_label_set_text(app->close_lbl, tmp_str);
         gtk_widget_show(app->close);
         printf("Prompting for final fan control\n");
@@ -348,12 +354,21 @@ void dialog_no(GtkButton *close_n, gpointer data) {
     gtk_main_quit();
 }
 
+void dialog_close(GtkButton *close_c, gpointer data) {
+    application *app = data;
+    gtk_widget_hide(app->close);
+    if (app->running == 0) {
+        app->timeout = g_timeout_add_seconds(app->scan_interval, update_temps, data);
+        app->running = 1;
+    }
+}
+
 int main(int argc, char** argv) {
     GError *err = NULL;
     GtkWidget *window;
     GtkDialog *close;
     GtkNotebook *main_nb;
-    GtkButton *exit_btn, *minimize_btn, *man_speed_btn, *auto_speed_btn, *close_y, *close_n;
+    GtkButton *exit_btn, *minimize_btn, *man_speed_btn, *auto_speed_btn, *close_y, *close_n, *close_c;
     GtkBuilder *builder;
     GtkStatusIcon *tray_icon;
     GtkStatusbar *status_bar;
@@ -423,6 +438,7 @@ int main(int argc, char** argv) {
     auto_speed_btn = GTK_BUTTON(gtk_builder_get_object(builder, "auto_ctrl_apply_btn"));
     close_y = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_yes_btn"));
     close_n = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_no_btn"));
+    close_c = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_cancel_btn"));
 
     // connect signals
     // minimize, hide window, tray icon stuff
@@ -438,6 +454,7 @@ int main(int argc, char** argv) {
     // close dialog signals:
     g_signal_connect(G_OBJECT(close_y), "clicked", G_CALLBACK(dialog_yes), &app);
     g_signal_connect(G_OBJECT(close_n), "clicked", G_CALLBACK(dialog_no), &app);
+    g_signal_connect(G_OBJECT(close_c), "clicked", G_CALLBACK(dialog_close), &app);
     // handle closing of the window
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(window_destroy), &app);
 
