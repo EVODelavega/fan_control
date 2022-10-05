@@ -14,8 +14,10 @@
     <property name="title" translatable="yes">Fan control running</property>
     <property name="resizable">False</property>
     <property name="window-position">center-on-parent</property>
+    <property name="destroy-with-parent">True</property>
     <property name="icon-name">dialog-question</property>
     <property name="type-hint">dialog</property>
+    <property name="gravity">center</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="close_box">
         <property name="can-focus">False</property>
@@ -184,6 +186,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
     <property name="resizable">False</property>
     <property name="window-position">center</property>
     <property name="icon">../data/icon.png</property>
+    <property name="gravity">center</property>
     <child>
       <object class="GtkBox" id="main_box">
         <property name="visible">True</property>
@@ -565,8 +568,9 @@ Do you wish to set fan speed back to auto when exiting?</property>
                   <object class="GtkLabel" id="about_top_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Name of application.
-2022.</property>
+                    <property name="label" translatable="yes">Fan Control v0.1
+Copyright  © 2022
+Elias Van Ootegem</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>
@@ -591,8 +595,12 @@ Do you wish to set fan speed back to auto when exiting?</property>
                   <object class="GtkLabel" id="about_author_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Created By ME
-Credit original</property>
+                    <property name="label" translatable="yes">Created By EVODelavega
+A GTK+-3 remake of the GTK+-2 Thinkpad-Fan-Control.
+Credit and special thanks to:
+Original by &lt;a href=" https://github.com/Stanko/ThinkPad-Fan-Control"&gt;Stanko&lt;/a&gt;
+Updated fork by &lt;a href="https://github.com/ForgedTurbo/ThinkPad-Fan-Control"&gt;ForgedTurbo&lt;/a&gt;</property>
+                    <property name="use-markup">True</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>
