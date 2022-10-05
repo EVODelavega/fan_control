@@ -73,6 +73,14 @@ typedef struct _speed_changes {
 } speed_changes;
 */
 
+typedef struct _fan_curve {
+    GtkLabel *config;
+    GtkComboBox *safe_cmb, *crit_cmb, *inc_cmb;
+    GtkSpinButton *safe, *crit, *scan_int, *delta;
+    int step, safe_temp, crit_temp, delta_temp, scan, safe_speed, crit_speed; // last values from input
+    int fan_speed; // current fan speed
+} fan_curve;
+
 typedef struct _application {
     // general widgets we can use
     GtkWidget *window;
@@ -88,6 +96,8 @@ typedef struct _application {
     GtkComboBox *auto_cmb;
     GtkComboBox *man_cmb;
     GtkSpinButton *auto_int, *man_int, *crit, *safe;
+    // everything for the fan curve in its own type
+    fan_curve *curve;
     // manual vs auto mode, was critical Y/N
     int manual, running, was_crit; // 0 for auto, running indicates current timeout running
     // speed/temp interval callback thing
@@ -123,6 +133,30 @@ int get_cpu_temp(application *app) {
     fscanf(temp_input, "temperatures:	%d", &temp);
     fclose(temp_input);
     return temp;
+}
+
+int set_curve_values(fan_curve *curve) {
+    char tmp_string[250];
+    int temp_crit, temp_safe, delta;
+    temp_crit = gtk_spin_button_get_value_as_int(curve->crit);
+    temp_safe = gtk_spin_button_get_value_as_int(curve->safe);
+    delta = gtk_spin_button_get_value_as_int(curve->delta);
+    if (temp_safe >= temp_crit || (temp_safe + delta) >= temp_crit) {
+        gtk_label_set_text(curve->config, "Save temperature must be < critical temperature - delta");
+        return 0;
+    }
+    curve->safe_temp = temp_safe;
+    curve->crit_temp = temp_crit;
+    curve->delta_temp = delta;
+    curve->scan = gtk_spin_button_get_value_as_int(curve->scan_int);
+    curve->safe_speed = gtk_combo_box_get_active(curve->safe_cmb);
+    curve->crit_speed = gtk_combo_box_get_active(curve->crit_cmb);
+    curve->step = gtk_combo_box_get_active(curve->inc_cmb) + 1; // @TODO check for 0
+    // ok, we have some settings, let's write it out
+    sprintf(tmp_string,
+            "Fan speed at safe temp %d: %s\nIncrease fan speed by %d per %d degrees\nFan speed at critical temp %d: %s\nScan every %ds\n",
+            temp_safe, fan_speeds[curve->safe_speed], curve->step, curve->delta_temp, temp_crit, fan_speeds[curve->crit_speed], curve->scan);
+    gtk_label_set_text(curve->config, tmp_string);
 }
 
 int set_auto_values(application *data) {
@@ -195,6 +229,51 @@ void hide_window(GtkStatusIcon *status_icon, gpointer user_data) {
     }
 }
 
+void apply_fan_curve(GtkWidget *object, gpointer data) {
+    application *app = data;
+    fan_curve *curve = app->curve;
+    // all values that may change
+    int old_crit, old_safe, old_scan, old_step, old_safe_speed, old_crit_speed, old_delta;
+    old_crit = curve->crit_temp;
+    old_safe = curve->safe_temp;
+    old_scan = curve->scan;
+    old_delta = curve->delta_temp;
+    old_step = curve->step;
+    old_safe_speed = curve->safe_speed;
+    old_crit_speed = curve->crit_speed;
+    if (!set_curve_values(curve)) {
+        fprintf(stderr, "Curve input is incorrect");
+        return;
+    }
+    // first check if we are already running a curve:
+    if (app->running && app->manual == 2) {
+        // we kind of use the values from the struct anyway, so we just want to check for scan interval changes, and if applicable, reset the timeout
+        if (old_scan != curve->scan) {
+            // new interval, set the timeout
+            g_source_remove(app->timeout);
+            // we do want update_temps to handle this stuff better, this callback will probably be changed
+            app->timeout = g_timeout_add_seconds(app->scan_interval, update_temps, data);
+            return;
+        }
+        // we can just ignore this, the change will be picked up next time the callback is invoked
+        return;
+    }
+    // now, are we running?
+    if (app->running) {
+        // yes, remove timeout
+        g_source_remove(app->timeout);
+    } else {
+        app->fan_speed = FAN_LVL_AUTO; // assume auto -> this is most likely the value on startup
+    }
+    // either way, now we are running, in mode 2
+    app->running = 1;
+    app->manual = 2;
+    if (update_temps(data)) {
+        // set timeout
+        app->timeout = g_timeout_add_seconds(app->curve->scan, update_temps, data);
+    }
+}
+
 // apply new auto config
 void apply_auto_speed(GtkWidget *object, gpointer data) {
     int old_safe, old_crit, old_fan_speed, old_interval;
@@ -264,7 +343,7 @@ void change_fan_speed(int new_speed, application *app) {
         case 0:
             strncpy(speed_str, "auto", 4);
             break;
-        case 8:
+        case FAN_LVL_FULL:
             strncpy(speed_str, "full-speed", 10);
             break;
         default:
@@ -272,7 +351,24 @@ void change_fan_speed(int new_speed, application *app) {
     }
     sprintf(tmp_str, "echo level %s > /proc/acpi/ibm/fan", speed_str);
     system(tmp_str);
-    printf("Fan speed set to %s - App config specifies: %s\n", fan_speeds[new_speed], fan_speeds[app->fan_speed]);
+    printf("Fan speed set to %s - config specified: %s\n", fan_speeds[new_speed], fan_speeds[app->fan_speed]); // this is a bit of an odd message when in curve mode
+}
+
+int curve_fan_speed_for_temp(fan_curve *curve, int temp) {
+    int speed, step, max, bracket;
+    speed = curve->safe_speed;
+    step = curve->step;
+    bracket = curve->safe_temp;
+    while(bracket < temp) {
+        bracket += curve->delta_temp;
+        speed += step;
+        // step is above full
+        if (speed > FAN_LVL_FULL) {
+            fprintf(stderr, "looks like it was possible to hit full fan speed before hitting critical temp\n");
+            return FAN_LVL_FULL;
+        }
+    }
+    return speed;
 }
 
 // timeout callback, keeps being called while  we are actually running
@@ -293,17 +389,50 @@ int update_temps(gpointer data) {
     pclose(sys_in);
 
     sprintf(message, "CPU Temp: %d C, Checked at %s", temp, time_str);
-    if (app->manual) {
+    if (app->manual == 1) {
         // full message for status bar:
         sprintf(tmp_string, "Manual control is active! - %s", message);
+    } else if (app->manual == 2) {
+        sprintf(tmp_string, "Curve control is active! - %s", message);
     } else {
         sprintf(tmp_string, "Automatic control - %s", message);
     }
     // push temp to status bar
     gtk_statusbar_remove(app->status_bar, 0, app->status_id);
     app->status_id = gtk_statusbar_push(app->status_bar, 0, tmp_string);
-    if (app->manual) {
+    if (app->manual == 1) {
         sprintf(tmp_string,"Fan level - %s\n%s", fan_speeds[app->fan_speed], message);
+    } else if (app->manual == 2) {
+        // this is where we handle the fan curve stuff, starting with the simple things:
+        if ((temp + app->curve->delta_temp) <= app->curve->safe_temp) {
+            // on or below safe + 1 delta
+            if (app->fan_speed != app->curve->safe_speed) {
+                change_fan_speed(app->curve->safe_speed, app);
+                app->fan_speed = app->curve->safe_speed;
+            }
+            sprintf(tmp_string,"Fan level - %s\n%s", fan_speeds[app->fan_speed], message);
+        } else if (temp >= app->curve->crit_temp) {
+            if (app->fan_speed != app->curve->crit_speed) {
+                change_fan_speed(app->curve->crit_speed, app);
+                app->fan_speed = app->curve->crit_speed;
+            }
+            sprintf(tmp_string,"Fan level - %s\n%s", fan_speeds[app->fan_speed], message);
+        } else {
+            app->curve->fan_speed = curve_fan_speed_for_temp(app->curve, temp);
+            // and here's where we need to calculate the steps, and corresponding fan speed
+            if (app->curve->fan_speed == app->fan_speed) {
+                // no changes in fan speed
+                sprintf(tmp_string,"Fan level - %s\n%s", fan_speeds[app->fan_speed], message);
+            } else {
+                if (app->curve->fan_speed < app->fan_speed) {
+                    sprintf(tmp_string,"Fan level down- %s\n%s", fan_speeds[app->curve->fan_speed], message);
+                } else {
+                    sprintf(tmp_string,"Fan level up - %s\n%s", fan_speeds[app->curve->fan_speed], message);
+                }
+                change_fan_speed(app->curve->fan_speed, app);
+                app->fan_speed = app->curve->fan_speed;
+            }
+        }
     } else {
         if (temp >= app->temp_crit && !app->was_crit) {
             // we are just now running too hot, ramp up fans
@@ -359,6 +488,9 @@ void notebook_switch(GtkNotebook *nb, GtkWidget *page, guint page_num, gpointer 
         case 1:
             sprintf(current_txt, lbl_fmt, "Hit apply to force the selected fan speed", temp);
             break;
+        case 2:
+            sprintf(current_txt, lbl_fmt, "Apply the configured fan curve", temp);
+            break;
         default:
             sprintf(current_txt, lbl_fmt, "", temp);
     }
@@ -390,11 +522,11 @@ int main(int argc, char** argv) {
     GtkWidget *window;
     GtkDialog *close;
     GtkNotebook *main_nb;
-    GtkButton *exit_btn, *minimize_btn, *man_speed_btn, *auto_speed_btn, *close_y, *close_n, *close_c;
+    GtkButton *exit_btn, *minimize_btn, *man_speed_btn, *auto_speed_btn, *close_y, *close_n, *close_c, *curve_apply_btn;
     GtkBuilder *builder;
     GtkStatusIcon *tray_icon;
     GtkStatusbar *status_bar;
-    GtkLabel *current_settings_lbl, *auto_settings_lbl, *close_lbl;
+    GtkLabel *current_settings_lbl, *auto_settings_lbl, *close_lbl, *curve_config_lbl;
     GtkComboBox *auto_speed, *manual_speed;
     GtkSpinButton *auto_interval_sbtn, *crit_sbtn, *safe_sbtn, *man_interval_sbtn;
     guint status_id;
@@ -429,6 +561,16 @@ int main(int argc, char** argv) {
     man_interval_sbtn = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "man_scan_int_sbtn"));
 
     status_id = gtk_statusbar_push(status_bar, 0, "Welcome!");
+    fan_curve curve = {
+        .config = GTK_LABEL(gtk_builder_get_object(builder, "grad_config_lbl")),
+        .safe_cmb = GTK_COMBO_BOX(gtk_builder_get_object(builder, "grad_safe_speed_cmb")),
+        .crit_cmb = GTK_COMBO_BOX(gtk_builder_get_object(builder, "grad_crit_speed_cmb")),
+        .inc_cmb = GTK_COMBO_BOX(gtk_builder_get_object(builder, "grad_fan_inc_cmb")),
+        .safe = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_safe_temp_sbtn")),
+        .crit = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_crit_temp_sbtn")),
+        .scan_int = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_int_sbtn")),
+        .delta = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_temp_inc_sbtn")),
+    };
     // everything we might need in the callbacks, passed as gpointer
     application app = {
         .window = window,
@@ -451,6 +593,7 @@ int main(int argc, char** argv) {
         .was_crit = 0,
         .manual = 0,
         .timeout = 0,
+        .curve = &curve,
     };
 
     // Get buttons
@@ -458,6 +601,7 @@ int main(int argc, char** argv) {
     minimize_btn = GTK_BUTTON (gtk_builder_get_object(builder, "minimize_btn"));
     man_speed_btn = GTK_BUTTON(gtk_builder_get_object(builder, "man_apply_btn"));
     auto_speed_btn = GTK_BUTTON(gtk_builder_get_object(builder, "auto_ctrl_apply_btn"));
+    curve_apply_btn = GTK_BUTTON(gtk_builder_get_object(builder, "grad_apply_btn"));
     close_y = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_yes_btn"));
     close_n = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_no_btn"));
     close_c = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_cancel_btn"));
@@ -471,6 +615,7 @@ int main(int argc, char** argv) {
     // apply changes buttons
     g_signal_connect(G_OBJECT(man_speed_btn), "clicked", G_CALLBACK(apply_manual_speed), &app);
     g_signal_connect(G_OBJECT(auto_speed_btn), "clicked", G_CALLBACK(apply_auto_speed), &app);
+    g_signal_connect(G_OBJECT(curve_apply_btn), "clicked", G_CALLBACK(apply_fan_curve), &app);
     // Exit button click
     g_signal_connect(G_OBJECT(exit_btn), "clicked", G_CALLBACK(window_destroy), &app);
     // close dialog signals:
@@ -484,6 +629,8 @@ int main(int argc, char** argv) {
     gtk_builder_connect_signals(builder, &app); // AFAIK, we don't really need this
     g_object_unref(G_OBJECT(builder));
     
+    // set curve values
+    set_curve_values(&curve);
     if (!set_auto_values(&app)) {
         fprintf(stderr, "DEFAULT PROFILE VALUES ARE WRONG");
     }
