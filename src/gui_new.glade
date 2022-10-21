@@ -206,7 +206,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
   </object>
   <object class="GtkAdjustment" id="grad_safe_adj">
     <property name="upper">90</property>
-    <property name="value">50</property>
+    <property name="value">40</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>

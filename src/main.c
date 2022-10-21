@@ -157,7 +157,7 @@ int set_curve_values(fan_curve *curve) {
             "Fan speed at safe temp %d: %s\nIncrease fan speed by %d per %d degrees\nFan speed at critical temp %d: %s\nScan every %ds\n",
             temp_safe, fan_speeds[curve->safe_speed], curve->step, curve->delta_temp, temp_crit, fan_speeds[curve->crit_speed], curve->scan);
     gtk_label_set_text(curve->config, tmp_string);
-    return 0;
+    return 1;
 }
 
 int set_auto_values(application *data) {
