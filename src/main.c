@@ -157,6 +157,7 @@ int set_curve_values(fan_curve *curve) {
             "Fan speed at safe temp %d: %s\nIncrease fan speed by %d per %d degrees\nFan speed at critical temp %d: %s\nScan every %ds\n",
             temp_safe, fan_speeds[curve->safe_speed], curve->step, curve->delta_temp, temp_crit, fan_speeds[curve->crit_speed], curve->scan);
     gtk_label_set_text(curve->config, tmp_string);
+    return 0;
 }
 
 int set_auto_values(application *data) {
@@ -211,7 +212,7 @@ void window_destroy(GtkWidget *object, gpointer data) {
         // show close dialog
         sprintf(tmp_str, "Current fan speed: %s (%d)", fan_speeds[app->fan_speed], app->fan_speed);
         gtk_label_set_text(app->close_lbl, tmp_str);
-        gtk_widget_show(app->close);
+        gtk_widget_show(GTK_WIDGET(app->close));
         return;
     }
     exit_app(app);
@@ -221,10 +222,10 @@ void window_destroy(GtkWidget *object, gpointer data) {
 void hide_window(GtkStatusIcon *status_icon, gpointer user_data) {
     application *app= user_data;
     if (app->visible) {
-        gtk_widget_hide(app->window);
+        gtk_widget_hide(GTK_WIDGET(app->window));
         app->visible = 0;
     } else {
-        gtk_widget_show(app->window);
+        gtk_widget_show(GTK_WIDGET(app->window));
         app->visible = 1;
     }
 }
@@ -233,21 +234,16 @@ void apply_fan_curve(GtkWidget *object, gpointer data) {
     application *app = data;
     fan_curve *curve = app->curve;
     // all values that may change
-    int old_crit, old_safe, old_scan, old_step, old_safe_speed, old_crit_speed, old_delta;
-    old_crit = curve->crit_temp;
-    old_safe = curve->safe_temp;
+    int old_scan;
     old_scan = curve->scan;
-    old_delta = curve->delta_temp;
-    old_step = curve->step;
-    old_safe_speed = curve->safe_speed;
-    old_crit_speed = curve->crit_speed;
     if (!set_curve_values(curve)) {
         fprintf(stderr, "Curve input is incorrect");
         return;
     }
     // first check if we are already running a curve:
     if (app->running && app->manual == 2) {
-        // we kind of use the values from the struct anyway, so we just want to check for scan interval changes, and if applicable, reset the timeout
+        // we are already running the curve. If the interval hasn't changed, then the next callback will apply the new curve values
+        // so we don't really need to check any of the other values anyway
         if (old_scan != curve->scan) {
             // new interval, set the timeout
             g_source_remove(app->timeout);
@@ -341,10 +337,10 @@ void change_fan_speed(int new_speed, application *app) {
     char speed_str[15], tmp_str[80];
     switch(new_speed) {
         case 0:
-            strncpy(speed_str, "auto", 4);
+            strncpy(speed_str, "auto", 5);
             break;
         case FAN_LVL_FULL:
-            strncpy(speed_str, "full-speed", 10);
+            strncpy(speed_str, "full-speed", 11);
             break;
         default:
             sprintf(speed_str, "%d", new_speed);
@@ -359,6 +355,14 @@ int curve_fan_speed_for_temp(fan_curve *curve, int temp) {
     speed = curve->safe_speed;
     step = curve->step;
     bracket = curve->safe_temp;
+    max = curve->crit_temp;
+    if (temp >= max) {
+        // critical speed reached, return here
+        return curve->crit_speed;
+    } else if (temp <= bracket) {
+        // bracket is safe temp here, so we know whether or not we can throttle down immediately
+        return speed;
+    }
     while(bracket < temp) {
         bracket += curve->delta_temp;
         speed += step;
@@ -499,20 +503,20 @@ void notebook_switch(GtkNotebook *nb, GtkWidget *page, guint page_num, gpointer 
 
 void dialog_yes(GtkButton *close_y, gpointer data) {
     application *app = data;
-    gtk_widget_hide(app->close);
+    gtk_widget_hide(GTK_WIDGET(app->close));
     change_fan_speed(FAN_LVL_AUTO, app);
     exit_app(app);
 }
 
 void dialog_no(GtkButton *close_n, gpointer data) {
     application *app = data;
-    gtk_widget_hide(app->close);
+    gtk_widget_hide(GTK_WIDGET(app->close));
     exit_app(app);
 }
 
 void dialog_close(GtkButton *close_c, gpointer data) {
     application *app = data;
-    gtk_widget_hide(app->close);
+    gtk_widget_hide(GTK_WIDGET(app->close));
     // no call to exit_app, timeout (if any) remains active
     // just hide the close dialog widget, and carry on
 }
@@ -526,7 +530,7 @@ int main(int argc, char** argv) {
     GtkBuilder *builder;
     GtkStatusIcon *tray_icon;
     GtkStatusbar *status_bar;
-    GtkLabel *current_settings_lbl, *auto_settings_lbl, *close_lbl, *curve_config_lbl;
+    GtkLabel *current_settings_lbl, *auto_settings_lbl, *close_lbl;
     GtkComboBox *auto_speed, *manual_speed;
     GtkSpinButton *auto_interval_sbtn, *crit_sbtn, *safe_sbtn, *man_interval_sbtn;
     guint status_id;
