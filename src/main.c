@@ -224,10 +224,10 @@ void hide_window(GtkStatusIcon *status_icon, gpointer user_data) {
     if (app->visible) {
         gtk_widget_hide(GTK_WIDGET(app->window));
         app->visible = 0;
-    } else {
-        gtk_widget_show(GTK_WIDGET(app->window));
-        app->visible = 1;
+        return;
     }
+    gtk_widget_show(GTK_WIDGET(app->window));
+    app->visible = 1;
 }
 
 void apply_fan_curve(GtkWidget *object, gpointer data) {
