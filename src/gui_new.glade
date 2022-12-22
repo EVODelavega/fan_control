@@ -200,13 +200,13 @@ Do you wish to set fan speed back to auto when exiting?</property>
   </object>
   <object class="GtkAdjustment" id="grad_crit_adj">
     <property name="upper">100</property>
-    <property name="value">60</property>
+    <property name="value">65</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="grad_safe_adj">
     <property name="upper">90</property>
-    <property name="value">40</property>
+    <property name="value">35</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
@@ -214,6 +214,12 @@ Do you wish to set fan speed back to auto when exiting?</property>
     <property name="lower">1</property>
     <property name="upper">600</property>
     <property name="value">5</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="grad_throttle_adj">
+    <property name="upper">100</property>
+    <property name="value">50</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
@@ -717,7 +723,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="can-focus">False</property>
                         <property name="model">fan_speed_lst</property>
                         <property name="id-column">2</property>
-                        <property name="active-id">1</property>
+                        <property name="active-id">2</property>
                         <child>
                           <object class="GtkCellRendererText" id="auto_fan_speed_cell_renderer1"/>
                           <attributes>
@@ -864,10 +870,28 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkScale" id="grad_throttle_scale">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="adjustment">grad_throttle_adj</property>
+                        <property name="round-digits">0</property>
+                        <property name="digits">0</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">3</property>
+                        <property name="top-attach">3</property>
+                      </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="grad_throttle_lbl">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label" translatable="yes">Decrement Threshold</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">2</property>
+                        <property name="top-attach">3</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>

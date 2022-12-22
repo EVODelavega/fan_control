@@ -77,8 +77,10 @@ typedef struct _fan_curve {
     GtkLabel *config;
     GtkComboBox *safe_cmb, *crit_cmb, *inc_cmb;
     GtkSpinButton *safe, *crit, *scan_int, *delta;
+    GtkScale *throttle_scl;
     int step, safe_temp, crit_temp, delta_temp, scan, safe_speed, crit_speed; // last values from input
     int fan_speed; // current fan speed
+    double throttle_factor;
 } fan_curve;
 
 typedef struct _application {
@@ -137,10 +139,12 @@ int get_cpu_temp(application *app) {
 
 int set_curve_values(fan_curve *curve) {
     char tmp_string[250];
-    int temp_crit, temp_safe, delta;
+    int temp_crit, temp_safe, delta, f_step;
+    gdouble throttle_val;
     temp_crit = gtk_spin_button_get_value_as_int(curve->crit);
     temp_safe = gtk_spin_button_get_value_as_int(curve->safe);
     delta = gtk_spin_button_get_value_as_int(curve->delta);
+    throttle_val = gtk_range_get_value(GTK_RANGE(curve->throttle_scl));
     if (temp_safe >= temp_crit || (temp_safe + delta) >= temp_crit) {
         gtk_label_set_text(curve->config, "Save temperature must be < critical temperature - delta");
         return 0;
@@ -151,11 +155,13 @@ int set_curve_values(fan_curve *curve) {
     curve->scan = gtk_spin_button_get_value_as_int(curve->scan_int);
     curve->safe_speed = gtk_combo_box_get_active(curve->safe_cmb);
     curve->crit_speed = gtk_combo_box_get_active(curve->crit_cmb);
+    curve->throttle_factor = throttle_val/100;
     curve->step = gtk_combo_box_get_active(curve->inc_cmb) + 1; // @TODO check for 0
+    f_step = (int) ((double) delta * curve->throttle_factor);
     // ok, we have some settings, let's write it out
     sprintf(tmp_string,
-            "Fan speed at safe temp %d: %s\nIncrease fan speed by %d per %d degrees\nFan speed at critical temp %d: %s\nScan every %ds\n",
-            temp_safe, fan_speeds[curve->safe_speed], curve->step, curve->delta_temp, temp_crit, fan_speeds[curve->crit_speed], curve->scan);
+            "Fan speed @ safe temp %d: %s\nFan speed step %d per %d degrees\nFan speed @ critical temp %d: %s\nScan every %ds\nThrottle factor: %.2f (%d)",
+            temp_safe, fan_speeds[curve->safe_speed], curve->step, curve->delta_temp, temp_crit, fan_speeds[curve->crit_speed], curve->scan, curve->throttle_factor, f_step);
     gtk_label_set_text(curve->config, tmp_string);
     return 1;
 }
@@ -350,12 +356,25 @@ void change_fan_speed(int new_speed, application *app) {
     printf("Fan speed set to %s - config specified: %s\n", fan_speeds[new_speed], fan_speeds[app->fan_speed]); // this is a bit of an odd message when in curve mode
 }
 
+static void
+curve_value_changed(GtkScale *scale, gpointer obj) {
+    fan_curve *curve = obj;
+    gdouble value = gtk_range_get_value(GTK_RANGE(scale));
+    curve->throttle_factor = value/100;
+    printf("New value is %f\n", value);
+}
+
 int curve_fan_speed_for_temp(fan_curve *curve, int temp) {
-    int speed, step, max, bracket;
+    int speed, step, max, bracket, f_step;
+    // If the temperature drops below a certain threshold, we don't want to instantly throttle down
+    // we want to make sure we drop below said temp by a given factor
+    // safe temperature can do whatever, we just ramp down, no factor applied
+    f_step = (int) ((double) curve->delta_temp * curve->throttle_factor);
     speed = curve->safe_speed;
     step = curve->step;
     bracket = curve->safe_temp;
     max = curve->crit_temp;
+    // for critical, or safe temps, we don't check the factor.
     if (temp >= max) {
         // critical speed reached, return here
         return curve->crit_speed;
@@ -363,6 +382,8 @@ int curve_fan_speed_for_temp(fan_curve *curve, int temp) {
         // bracket is safe temp here, so we know whether or not we can throttle down immediately
         return speed;
     }
+    // now the temp measured should be increased by the factor
+    temp += f_step;
     while(bracket < temp) {
         bracket += curve->delta_temp;
         speed += step;
@@ -574,6 +595,7 @@ int main(int argc, char** argv) {
         .crit = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_crit_temp_sbtn")),
         .scan_int = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_int_sbtn")),
         .delta = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "grad_temp_inc_sbtn")),
+        .throttle_scl = GTK_SCALE(gtk_builder_get_object(builder, "grad_throttle_scale")),
     };
     // everything we might need in the callbacks, passed as gpointer
     application app = {
@@ -610,6 +632,8 @@ int main(int argc, char** argv) {
     close_n = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_no_btn"));
     close_c = GTK_BUTTON(gtk_builder_get_object(builder, "close_auto_cancel_btn"));
 
+    // format throttle scale, pass in the curve struct so we can update the factor field
+    g_signal_connect(G_OBJECT(curve.throttle_scl), "value-changed", G_CALLBACK(curve_value_changed), &curve);
     // connect signals
     // minimize, hide window, tray icon stuff
     g_signal_connect(G_OBJECT(tray_icon), "activate", G_CALLBACK(hide_window), &app);
