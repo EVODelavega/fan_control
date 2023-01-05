@@ -309,7 +309,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Scan Interval:</property>
+                        <property name="label" translatable="yes">Scan Interval, s:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -321,7 +321,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Critical Temperature:</property>
+                        <property name="label" translatable="yes">Critical Temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -333,7 +333,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Safe temperature: </property>
+                        <property name="label" translatable="yes">Safe temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -470,7 +470,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Scan Interval:</property>
+                        <property name="label" translatable="yes">Scan Interval, s:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -575,6 +575,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
+                    <property name="spacing">5</property>
                     <child>
                       <object class="GtkLabel" id="gradient_lbl">
                         <property name="visible">True</property>
@@ -619,7 +620,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Safe Temperature:</property>
+                        <property name="label" translatable="yes">Safe Temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -676,7 +677,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Temperature Delta:</property>
+                        <property name="label" translatable="yes">Temperature Delta, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -700,7 +701,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Critical Temperature:</property>
+                        <property name="label" translatable="yes">Critical Temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -788,7 +789,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">end</property>
-                        <property name="label" translatable="yes">Scan Interval:</property>
+                        <property name="label" translatable="yes">Scan Interval, s:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -882,9 +883,10 @@ Do you wish to set fan speed back to auto when exiting?</property>
                   <object class="GtkLabel" id="about_top_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Fan Control v0.1
+                    <property name="label" translatable="yes">&lt;a href=" https://github.com/EVODelavega/fan_control"&gt;Fan Control&lt;/a&gt; v0.1
 Copyright  © 2022
 Elias Van Ootegem</property>
+                    <property name="use-markup">True</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>
