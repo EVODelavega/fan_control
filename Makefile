@@ -12,7 +12,7 @@ $(PROGRAM): $(SRCPATH)main.c
 .PHONY: beauty clean dist debug
 
 debug:
-	$(cc) -g -Wall $(DEBUGPATH)$(PROGRAM) $(SRCPATH)main.c $(GTKLIBS)
+	$(CC) -g -Wall -o $(DEBUGPATH)$(PROGRAM) $(SRCPATH)main.c $(GTKLIBS)
 
 beauty:
 	-indent $(PROGRAM).c
