@@ -1,6 +1,7 @@
 PROGRAM = fan_control
 CC      = gcc
 CFLAGS  = -O2 -Wall
+CDFLAGS = -g -Wall
 GTKLIBS = `pkg-config gtk+-3.0 --cflags --libs`
 SRCPATH = src/
 BINPATH = build/
@@ -12,7 +13,7 @@ $(PROGRAM): $(SRCPATH)main.c
 .PHONY: beauty clean dist debug
 
 debug:
-	$(cc) -g -Wall $(DEBUGPATH)$(PROGRAM) $(SRCPATH)main.c $(GTKLIBS)
+	$(CC) $(CDFLAGS) -o $(DEBUGPATH)$(PROGRAM) $(SRCPATH)main.c $(GTKLIBS)
 
 beauty:
 	-indent $(PROGRAM).c
