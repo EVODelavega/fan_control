@@ -723,7 +723,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="can-focus">False</property>
                         <property name="model">fan_speed_lst</property>
                         <property name="id-column">2</property>
-                        <property name="active-id">2</property>
+                        <property name="active-id">1</property>
                         <child>
                           <object class="GtkCellRendererText" id="auto_fan_speed_cell_renderer1"/>
                           <attributes>
