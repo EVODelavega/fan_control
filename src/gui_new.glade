@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.38.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAdjustment" id="auto_scan_int_adj">
@@ -262,23 +262,26 @@ Do you wish to set fan speed back to auto when exiting?</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <child>
-              <!-- n-columns=3 n-rows=5 -->
+              <!-- n-columns=1 n-rows=3 -->
               <object class="GtkGrid" id="auto_ctrl_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="row-spacing">20</property>
-                <property name="column-homogeneous">True</property>
+                <property name="halign">center</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="row-spacing">10</property>
                 <child>
                   <object class="GtkLabel" id="auto_ctrl_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="ypad">20</property>
                     <property name="label" translatable="yes">Current Options: 120s - 55C - 50C - Full-Speed</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                   </packing>
                 </child>
                 <child>
@@ -289,8 +292,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                     <property name="receives-default">True</property>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">3</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
@@ -298,11 +301,15 @@ Do you wish to set fan speed back to auto when exiting?</property>
                   <object class="GtkGrid" id="auto_ctrl_grd">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="halign">center</property>
+                    <property name="row-spacing">10</property>
+                    <property name="column-spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="scan_interval_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Scan Interval:</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Scan Interval, s:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -313,7 +320,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="crit_tmp_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Critical Temperature:</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Critical Temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -324,7 +332,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="safe_temp_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Safe temperature: </property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Safe temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -335,6 +344,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="fan_speed_crit_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="halign">end</property>
                         <property name="label" translatable="yes">Fan speed at Critical temperature:</property>
                       </object>
                       <packing>
@@ -407,45 +417,9 @@ Do you wish to set fan speed back to auto when exiting?</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">2</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
             </child>
@@ -460,13 +434,17 @@ Do you wish to set fan speed back to auto when exiting?</property>
               </packing>
             </child>
             <child>
-              <!-- n-columns=3 n-rows=6 -->
+              <!-- n-columns=1 n-rows=3 -->
               <object class="GtkGrid" id="man_ctrl_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="row-spacing">30</property>
-                <property name="column-spacing">20</property>
-                <property name="column-homogeneous">True</property>
+                <property name="halign">center</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="row-spacing">10</property>
+                <property name="column-spacing">10</property>
                 <child>
                   <object class="GtkButton" id="man_apply_btn">
                     <property name="label" translatable="yes">Apply</property>
@@ -475,8 +453,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                     <property name="receives-default">True</property>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">4</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
                   </packing>
                 </child>
                 <child>
@@ -484,13 +462,15 @@ Do you wish to set fan speed back to auto when exiting?</property>
                   <object class="GtkGrid" id="man_ctrl_settings_grid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="row-homogeneous">True</property>
-                    <property name="column-homogeneous">True</property>
+                    <property name="halign">center</property>
+                    <property name="row-spacing">10</property>
+                    <property name="column-spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="man_scan_interval_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Scan Interval:</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Scan Interval, s:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -501,6 +481,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="man_fan_speed_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="halign">end</property>
                         <property name="label" translatable="yes">Fan Speed:</property>
                       </object>
                       <packing>
@@ -545,68 +526,21 @@ Do you wish to set fan speed back to auto when exiting?</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">2</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="man_ctrl_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="xpad">20</property>
-                    <property name="ypad">20</property>
                     <property name="label" translatable="yes">Override scan interval and force a given fan speed</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
-                    <property name="top-attach">1</property>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -625,23 +559,27 @@ Do you wish to set fan speed back to auto when exiting?</property>
               </packing>
             </child>
             <child>
-              <!-- n-columns=3 n-rows=4 -->
+              <!-- n-columns=1 n-rows=3 -->
               <object class="GtkGrid" id="gradient_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="row-spacing">10</property>
+                <property name="column-spacing">10</property>
                 <child>
                   <object class="GtkBox" id="grad_info_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
-                    <child>
-                      <placeholder/>
-                    </child>
+                    <property name="spacing">5</property>
                     <child>
                       <object class="GtkLabel" id="gradient_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="ypad">5</property>
                         <property name="label" translatable="yes">Configure fan speed in function of temperature.</property>
                         <property name="justify">center</property>
                       </object>
@@ -655,7 +593,6 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_config_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="ypad">2</property>
                         <property name="label" translatable="yes">Current config</property>
                         <property name="justify">center</property>
                       </object>
@@ -665,12 +602,9 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
-                    <child>
-                      <placeholder/>
-                    </child>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
+                    <property name="left-attach">0</property>
                     <property name="top-attach">0</property>
                   </packing>
                 </child>
@@ -679,13 +613,14 @@ Do you wish to set fan speed back to auto when exiting?</property>
                   <object class="GtkGrid" id="grad_input_grid">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="row-homogeneous">True</property>
-                    <property name="column-homogeneous">True</property>
+                    <property name="row-spacing">10</property>
+                    <property name="column-spacing">10</property>
                     <child>
                       <object class="GtkLabel" id="grad_safe_temp_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Safe Temperature</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Safe Temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -710,7 +645,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_safe_speed_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Safe fan speed</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Safe fan speed:</property>
                       </object>
                       <packing>
                         <property name="left-attach">2</property>
@@ -740,7 +676,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_temp_inc_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Temperature Delta</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Temperature Delta, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -751,7 +688,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_fan_inc_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Fan speed increment</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Fan speed increment:</property>
                       </object>
                       <packing>
                         <property name="left-attach">2</property>
@@ -762,7 +700,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_crit_temp_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Critical Temperature</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Critical Temperature, C:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -773,7 +712,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_crit_speed_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Critical fan speed </property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Critical fan speed:</property>
                       </object>
                       <packing>
                         <property name="left-attach">2</property>
@@ -848,7 +788,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_int_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Scan Interval</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Scan Interval, s:</property>
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
@@ -886,7 +827,8 @@ Do you wish to set fan speed back to auto when exiting?</property>
                       <object class="GtkLabel" id="grad_throttle_lbl">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Decrement Threshold</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes">Decrement Threshold:</property>
                       </object>
                       <packing>
                         <property name="left-attach">2</property>
@@ -895,60 +837,21 @@ Do you wish to set fan speed back to auto when exiting?</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
+                    <property name="left-attach">0</property>
                     <property name="top-attach">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkBox" id="grad_bottom_box">
+                  <object class="GtkButton" id="grad_apply_btn">
+                    <property name="label" translatable="yes">Apply</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <child>
-                      <object class="GtkButton" id="grad_apply_btn">
-                        <property name="label" translatable="yes">Apply</property>
-                        <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <property name="receives-default">True</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
                   </object>
                   <packing>
-                    <property name="left-attach">1</property>
+                    <property name="left-attach">0</property>
                     <property name="top-attach">2</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -970,14 +873,20 @@ Do you wish to set fan speed back to auto when exiting?</property>
               <object class="GtkBox" id="about_grid">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="halign">center</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-top">10</property>
+                <property name="margin-bottom">10</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="about_top_lbl">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="label" translatable="yes">Fan Control v0.1
+                    <property name="label" translatable="yes">&lt;a href=" https://github.com/EVODelavega/fan_control"&gt;Fan Control&lt;/a&gt; v0.1
 Copyright  © 2022
 Elias Van Ootegem</property>
+                    <property name="use-markup">True</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>
@@ -990,6 +899,8 @@ Elias Van Ootegem</property>
                   <object class="GtkImage" id="about_img">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="margin-top">10</property>
+                    <property name="margin-bottom">10</property>
                     <property name="pixbuf">../data/logo.png</property>
                   </object>
                   <packing>
@@ -1043,6 +954,10 @@ Updated fork by &lt;a href="https://github.com/ForgedTurbo/ThinkPad-Fan-Control"
           <object class="GtkLabel" id="current_settings_lbl">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-top">10</property>
+            <property name="margin-bottom">10</property>
             <property name="label" translatable="yes">Current settings and info
 here</property>
             <property name="justify">center</property>
@@ -1057,7 +972,9 @@ here</property>
           <object class="GtkBox" id="buttons_box">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="homogeneous">True</property>
+            <property name="margin-start">10</property>
+            <property name="margin-end">10</property>
+            <property name="spacing">10</property>
             <child>
               <placeholder/>
             </child>
@@ -1069,7 +986,7 @@ here</property>
                 <property name="receives-default">True</property>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -1085,7 +1002,7 @@ here</property>
                 <property name="receives-default">True</property>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
