@@ -98,6 +98,7 @@ typedef struct _application {
     GtkComboBox *auto_cmb;
     GtkComboBox *man_cmb;
     GtkSpinButton *auto_int, *man_int, *crit, *safe;
+    GtkButton *off_btn;
     // everything for the fan curve in its own type
     fan_curve *curve;
     // manual vs auto mode, was critical Y/N
@@ -266,6 +267,7 @@ void apply_fan_curve(GtkWidget *object, gpointer data) {
         g_source_remove(app->timeout);
     } else {
         app->fan_speed = FAN_LVL_AUTO; // assume auto -> this is most likely the value on startup
+        gtk_widget_set_sensitive(app->off_btn, TRUE);
     }
     // either way, now we are running, in mode 2
     app->running = 1;
@@ -303,6 +305,8 @@ void apply_auto_speed(GtkWidget *object, gpointer data) {
     if (app->running) {
         // we were running, so clear the timeout
         g_source_remove(app->timeout);
+    } else {
+        gtk_widget_set_sensitive(app->off_btn, TRUE);
     }
     sprintf(config_str, AUTO_LBL_FMT, app->scan_interval, app->temp_crit, app->temp_safe, fan_speeds[app->fan_speed]);
     gtk_label_set_text(app->auto_lbl, config_str);
@@ -328,6 +332,9 @@ void apply_manual_speed(GtkWidget *object, gpointer data) {
     if (app->running) {
         // remove timeout...
         g_source_remove(app->timeout);
+    } else {
+        // we were not yet running fan control, we are now, so enable the stop button
+        gtk_widget_set_sensitive( app->off_btn, TRUE);
     }
     // first up, let's change the fan speed
     change_fan_speed(app->fan_speed, app);
@@ -522,6 +529,24 @@ void notebook_switch(GtkNotebook *nb, GtkWidget *page, guint page_num, gpointer 
     gtk_label_set_text(app->current_lbl, current_txt);
 }
 
+void stop_fan_monitor(GtkWidget *object, gpointer data) {
+    application *app = data;
+    if (app->running) {
+        g_source_remove(app->timeout);
+    }
+    if (app->fan_speed != FAN_LVL_AUTO) {
+        app->fan_speed = FAN_LVL_AUTO;
+        change_fan_speed(FAN_LVL_AUTO, app);
+    }
+    // this may not always be needed, but still, doesn't hurt
+    app->running = 0;
+    app->manual = 0;
+    // set the labels to whatever values we need them to be for the text to be relevant
+    notebook_switch(app->main_nb, NULL, gtk_notebook_get_current_page(app->main_nb), app); // the page is irrelevant, we can safely pass in NULL
+    // disable button
+    gtk_widget_set_sensitive(object, FALSE);
+}
+
 void dialog_yes(GtkButton *close_y, gpointer data) {
     application *app = data;
     gtk_widget_hide(GTK_WIDGET(app->close));
@@ -547,7 +572,7 @@ int main(int argc, char** argv) {
     GtkWidget *window;
     GtkDialog *close;
     GtkNotebook *main_nb;
-    GtkButton *exit_btn, *minimize_btn, *man_speed_btn, *auto_speed_btn, *close_y, *close_n, *close_c, *curve_apply_btn;
+    GtkButton *exit_btn, *minimize_btn, *man_speed_btn, *auto_speed_btn, *close_y, *close_n, *close_c, *curve_apply_btn, *off_btn;
     GtkBuilder *builder;
     GtkStatusIcon *tray_icon;
     GtkStatusbar *status_bar;
@@ -584,6 +609,7 @@ int main(int argc, char** argv) {
     crit_sbtn = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "crit_tmp_sbtn"));
     safe_sbtn = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "safe_tmp_sbtn"));
     man_interval_sbtn = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "man_scan_int_sbtn"));
+    off_btn = GTK_BUTTON(gtk_builder_get_object(builder, "off_btn"));
 
     status_id = gtk_statusbar_push(status_bar, 0, "Welcome!");
     fan_curve curve = {
@@ -620,6 +646,7 @@ int main(int argc, char** argv) {
         .manual = 0,
         .timeout = 0,
         .curve = &curve,
+        .off_btn = off_btn,
     };
 
     // Get buttons
@@ -644,6 +671,8 @@ int main(int argc, char** argv) {
     g_signal_connect(G_OBJECT(man_speed_btn), "clicked", G_CALLBACK(apply_manual_speed), &app);
     g_signal_connect(G_OBJECT(auto_speed_btn), "clicked", G_CALLBACK(apply_auto_speed), &app);
     g_signal_connect(G_OBJECT(curve_apply_btn), "clicked", G_CALLBACK(apply_fan_curve), &app);
+    // button is only enabled if the app state is set to running
+    g_signal_connect(G_OBJECT(off_btn), "clicked", G_CALLBACK(stop_fan_monitor), &app);
     // Exit button click
     g_signal_connect(G_OBJECT(exit_btn), "clicked", G_CALLBACK(window_destroy), &app);
     // close dialog signals:
