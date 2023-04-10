@@ -30,6 +30,7 @@ MA 02111, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <gtk/gtk.h>
 
 #define GTK_GUI_FILE "src/gui_new.glade"
@@ -109,6 +110,8 @@ typedef struct _application {
     int temp_safe, temp_crit, scan_interval, fan_speed;
     // used for minimization
     int visible; // is for minimization
+    // chatty or not
+    bool print_logs;
 } application;
 
 // declare some funcs that are in the wrong place
@@ -120,7 +123,8 @@ void exit_app(application *app) {
     if (app->running) {
         g_source_remove(app->timeout);
     }
-    printf("Exit\n");
+    if (app->print_logs)
+        printf("Exit\n");
     gtk_main_quit();
 }
 
@@ -212,7 +216,8 @@ void window_destroy(GtkWidget *object, gpointer data) {
     if (app->running) {
         if (app->fan_speed == 0) {
             // fan speed is already in auto, we don't need to prompt to set it to auto, just silently exit
-            printf("Fan already in auto, timout removed, exit\n");
+            if (app->print_logs)
+                printf("Fan already in auto, timout removed, exit\n");
             exit_app(app);
             return;
         }
@@ -360,7 +365,8 @@ void change_fan_speed(int new_speed, application *app) {
     }
     sprintf(tmp_str, "echo level %s > /proc/acpi/ibm/fan", speed_str);
     system(tmp_str);
-    printf("Fan speed set to %s - config specified: %s\n", fan_speeds[new_speed], fan_speeds[app->fan_speed]); // this is a bit of an odd message when in curve mode
+    if (app->print_logs)
+        printf("Fan speed set to %s - config specified: %s\n", fan_speeds[new_speed], fan_speeds[app->fan_speed]); // this is a bit of an odd message when in curve mode
 }
 
 static void
@@ -368,7 +374,7 @@ curve_value_changed(GtkScale *scale, gpointer obj) {
     fan_curve *curve = obj;
     gdouble value = gtk_range_get_value(GTK_RANGE(scale));
     curve->throttle_factor = value/100;
-    printf("New value is %f\n", value);
+    // printf("New value is %f\n", value);
 }
 
 int curve_fan_speed_for_temp(fan_curve *curve, int temp) {
@@ -567,7 +573,15 @@ void dialog_close(GtkButton *close_c, gpointer data) {
     // just hide the close dialog widget, and carry on
 }
 
+void print_help(char const *bin) {
+    printf("%s Usage:\n\
+            -v : Verbose, print logs to stdout (default false)\n\
+            -h : Help - display this message\n", bin);
+}
+
 int main(int argc, char** argv) {
+    bool print_logs = false;
+    int c;
     GError *err = NULL;
     GtkWidget *window;
     GtkDialog *close;
@@ -580,7 +594,28 @@ int main(int argc, char** argv) {
     GtkComboBox *auto_speed, *manual_speed;
     GtkSpinButton *auto_interval_sbtn, *crit_sbtn, *safe_sbtn, *man_interval_sbtn;
     guint status_id;
+    char const* bin = argv[0];
 
+    while ((c = getopt(argc, argv, "vh")) != -1) {
+        switch (c) {
+            case 'v':
+                print_logs = true;
+                break;
+            case 'h':
+                print_help(bin);
+                return 0;
+            case '?':
+                print_help(bin);
+                if (isprint(optopt)) {
+                    fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+                } else {
+                    fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+                }
+                return 1;
+            default:
+                abort();
+        }
+    }
     gtk_init(&argc, &argv);
 
     tray_icon = create_tray_icon();
@@ -647,6 +682,7 @@ int main(int argc, char** argv) {
         .timeout = 0,
         .curve = &curve,
         .off_btn = off_btn,
+        .print_logs = print_logs,
     };
 
     // Get buttons
