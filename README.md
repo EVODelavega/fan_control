@@ -16,6 +16,14 @@ There are, of course a lot of things that can do with some improvements:
 * Replace the `application` type to a composite passing only the parts that actually make sense to the various callbacks.
 * Add the ability to set fan speeds for various temperature points (e.g. 30-50: speed 1, 51-60: speed 4, 61-70: speed 7, 71+; speed FULL).
 
+### Prerequisites
+This application requires a ThinkPad laptop with the `thinkpad_acpi` kernel module loaded, and the `fan_control` option enabled.
+
+You can enable `fan_control` by executing:
+```
+echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkpad_acpi.conf
+```
+
 ### Compiling
 
 All you really need is `gcc`, `pkg-config`, `make`, and have `gtk+-3` installed. If you don't have make, as you can see in the Makefile, the only thing that is needed to compile this is:

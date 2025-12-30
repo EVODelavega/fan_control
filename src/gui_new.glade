@@ -125,44 +125,49 @@ Do you wish to set fan speed back to auto when exiting?</property>
         <col id="2" translatable="yes">0</col>
       </row>
       <row>
-        <col id="0" translatable="yes">1</col>
+        <col id="0" translatable="yes">0</col>
         <col id="1">1</col>
         <col id="2" translatable="yes">1</col>
       </row>
       <row>
-        <col id="0" translatable="yes">2</col>
+        <col id="0" translatable="yes">1</col>
         <col id="1">2</col>
         <col id="2" translatable="yes">2</col>
       </row>
       <row>
-        <col id="0" translatable="yes">3</col>
+        <col id="0" translatable="yes">2</col>
         <col id="1">3</col>
         <col id="2" translatable="yes">3</col>
       </row>
       <row>
-        <col id="0" translatable="yes">4</col>
+        <col id="0" translatable="yes">3</col>
         <col id="1">4</col>
         <col id="2" translatable="yes">4</col>
       </row>
       <row>
-        <col id="0" translatable="yes">5</col>
+        <col id="0" translatable="yes">4</col>
         <col id="1">5</col>
         <col id="2" translatable="yes">5</col>
       </row>
       <row>
-        <col id="0" translatable="yes">6</col>
+        <col id="0" translatable="yes">5</col>
         <col id="1">6</col>
         <col id="2" translatable="yes">6</col>
       </row>
       <row>
-        <col id="0" translatable="yes">7</col>
+        <col id="0" translatable="yes">6</col>
         <col id="1">7</col>
         <col id="2" translatable="yes">7</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Full-Speed</col>
+        <col id="0" translatable="yes">7</col>
         <col id="1">8</col>
         <col id="2" translatable="yes">8</col>
+      </row>
+      <row>
+        <col id="0" translatable="yes">Full-Speed</col>
+        <col id="1">9</col>
+        <col id="2" translatable="yes">9</col>
       </row>
     </data>
   </object>
@@ -402,7 +407,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="can-focus">False</property>
                         <property name="model">fan_speed_lst</property>
                         <property name="id-column">2</property>
-                        <property name="active-id">8</property>
+                        <property name="active-id">9</property>
                         <child>
                           <object class="GtkCellRendererText" id="auto_fan_speed_cell_renderer"/>
                           <attributes>
@@ -511,7 +516,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="can-focus">False</property>
                         <property name="model">fan_speed_lst</property>
                         <property name="id-column">2</property>
-                        <property name="active-id">7</property>
+                        <property name="active-id">8</property>
                         <child>
                           <object class="GtkCellRendererText" id="man_fan_speed_renderer"/>
                           <attributes>
@@ -659,7 +664,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="can-focus">False</property>
                         <property name="model">fan_speed_lst</property>
                         <property name="id-column">2</property>
-                        <property name="active-id">1</property>
+                        <property name="active-id">2</property>
                         <child>
                           <object class="GtkCellRendererText" id="auto_fan_speed_cell_renderer1"/>
                           <attributes>
@@ -726,7 +731,7 @@ Do you wish to set fan speed back to auto when exiting?</property>
                         <property name="can-focus">False</property>
                         <property name="model">fan_speed_lst</property>
                         <property name="id-column">2</property>
-                        <property name="active-id">8</property>
+                        <property name="active-id">9</property>
                         <child>
                           <object class="GtkCellRendererText" id="auto_fan_speed_cell_renderer2"/>
                           <attributes>
