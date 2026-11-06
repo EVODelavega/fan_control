@@ -21,8 +21,24 @@ There are, of course a lot of things that can do with some improvements:
 All you really need is `gcc`, `pkg-config`, `make`, and have `gtk+-3` installed. If you don't have make, as you can see in the Makefile, the only thing that is needed to compile this is:
 
 ```bash
-$ gcc -O2 -Wall -o build/fan_control src/main.c `pkg-config gtk+-3.0 --libs --cflags`
+make
 ```
+
+Check the makefile for more, but simply running `make` ought to be enough. It checks if the src/resources.c require updating, and builds the tool into `$(BINPATH)/fan_control` (defaults to `./build/fan_control`).
+
+### Installing
+
+Simply run:
+
+```
+$ make install
+```
+
+to install the tool to `~/.local/bin` (make sure it's in your `$PATH`). You might need `sudo` but you can run `$ make install-global`. Depending on where the tool is installed, you may need to edit the `auto-start.sh` script. I can't be fussed to update it to check for `fan_control` in your `$PATH` and the like, and changing a one-liner in a bash script should be pretty straightforward for anyone using this.
+
+### Why update this now?
+
+Well, I've found myself working on a new ThinkPad X1 2-in-1 Aura recently, and was curious to know if this tool still worked. It turns out it still work just fine, so I decided to spend a bit of time handling the resources (icons etc...) so the tool doesn't need the any of the png's and glade files around.
 
 ### More things to do
 
