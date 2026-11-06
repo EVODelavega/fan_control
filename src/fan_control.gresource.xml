@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/fan_control/ui">
+    <file>new_gui.glade</file>
+    <file alias="logo.png">../data/logo.png</file>
+    <file alias="icon.png">../data/icon.png</file>
+  </gresource>
+</gresources>
+

@@ -34,7 +34,15 @@ MA 02111, USA.
 #include <stdbool.h>
 #include <gtk/gtk.h>
 
-#define GTK_GUI_FILE "src/gui_new.glade"
+#define RESOURCE_PREFIX "/com/fan_control"
+#define UI_NAMESPACE RESOURCE_PREFIX "/ui"
+// GUI_rESOURCE points to a GResource path, not the file (prev version).
+// the glade file is passed through glib-compile-resources, compiling resources
+// into the binary (check gresource.xml file).
+// The resulting path is basically RESOURCE_PREFIX + filename from manifest.
+#define GUI_RESOURCE UI_NAMESPACE "/new_gui_new.glade"
+#define ICON_RESOURCE UI_NAMESPACE "/icon.png"
+
 #define FAN_LVL_AUTO 0
 #define FAN_LVL_FULL 8
 // scan interval, critical temp, safe temp, fan speed
@@ -496,11 +504,22 @@ int update_temps(gpointer data) {
     return TRUE;
 }
 
-static GtkStatusIcon *create_tray_icon() {
+static GtkStatusIcon
+*create_tray_icon( void ) {
     GtkStatusIcon *tray_icon = gtk_status_icon_new();
+    GError *err = NULL;
+    // icon.png is compiled in via GResource (see fan_control.gresource.xml)
+    // rather than loaded from a filesystem path.
+    GdkPixbuf *icon = gdk_pixbuf_new_from_resource(ICON_RESOURCE, &err);
 
     // g_signal_connect(G_OBJECT(tray_icon), "popup-menu",G_CALLBACK(tray_icon_on_menu), NULL);
-    gtk_status_icon_set_from_file(tray_icon, "data/icon.png");
+    if (icon == NULL) {
+        fprintf(stderr, "Error loading tray icon from resource. Error: %s\n", err->message);
+        g_error_free(err);
+    } else {
+        gtk_status_icon_set_from_pixbuf(tray_icon, icon);
+        g_object_unref(icon);
+    }
     // gtk_status_icon_set_tooltip(tray_icon, "ThinkPad Fan Control .:: level - auto ::.");
     gtk_status_icon_set_visible(tray_icon, TRUE);
 
@@ -623,8 +642,8 @@ int main(int argc, char** argv) {
 
     builder = gtk_builder_new();
     // make sure this all works
-    if (gtk_builder_add_from_file(builder, GTK_GUI_FILE, &err) == 0) {
-        fprintf(stderr, "Error handling build from file. Error: %s\n", err->message);
+    if (gtk_builder_add_from_resource(builder, GUI_RESOURCE, &err) == 0) {
+        fprintf(stderr, "Error handling build from resource. Error: %s\n", err->message);
         g_object_unref(G_OBJECT(builder));
         return 1;
     }
@@ -737,3 +756,4 @@ int main(int argc, char** argv) {
     gtk_main();
     return 0;
 }
+
